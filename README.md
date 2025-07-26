@@ -77,31 +77,3 @@ Password-Generator/
 ├── main.py              # Main application file
 ├── README.md            # This file
 ```
-
-## Requirements
-
-- Python 3.6+
-- tkinter (standard library)
-- random (standard library)
-- string (standard library)
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-feature`)
-3. Commit your changes (`git commit -am 'Add new feature'`)
-4. Push to the branch (`git push origin feature/new-feature`)
-5. Create a Pull Request
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## Author
-
-**Aidan James** - [Aidanjames156](https://github.com/Aidanjames156)
-
-## Acknowledgments
-
-- Built with Python's Tkinter library
----
