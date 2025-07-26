@@ -7,20 +7,19 @@ class PasswordGenerator:
     def __init__(self, root):
         self.root = root
         self.root.title("Password Generator")
-        self.root.geometry("600x500")
+        self.root.geometry("700x600")  
         self.root.resizable(False, False)
         
-        # Set background color
         self.root.configure(bg='#2c3e50')
         
-        # Configure style
         self.setup_styles()
-        
-        # Create widgets
+
         self.create_widgets()
         
-        # Generate initial password
-        self.generate_password()
+        try:
+            self.generate_password()
+        except:
+            pass 
     
     def setup_styles(self):
         style = ttk.Style()
@@ -40,11 +39,9 @@ class PasswordGenerator:
                        background='#2c3e50')
     
     def create_widgets(self):
-        # Main container
         main_frame = ttk.Frame(self.root, style='Custom.TFrame', padding="30")
         main_frame.pack(fill=tk.BOTH, expand=True)
-        
-        # Title
+
         title_label = ttk.Label(main_frame, text="Password Generator", 
                                style='Title.TLabel')
         title_label.pack(pady=(0, 10))
@@ -79,22 +76,18 @@ class PasswordGenerator:
                                        foreground='#e74c3c')
         self.length_display.pack(side=tk.RIGHT, padx=(0, 10))
         
-        # Bind scale movement to update display
         length_scale.configure(command=self.update_length_display)
         
-        # Character options section
         options_frame = ttk.LabelFrame(main_frame, text="Character Options", 
                                       padding="15")
         options_frame.pack(fill=tk.X, pady=(0, 20))
-        
-        # Create checkbox variables
+
         self.include_lowercase = tk.BooleanVar(value=True)
         self.include_uppercase = tk.BooleanVar(value=True)
         self.include_numbers = tk.BooleanVar(value=True)
         self.include_symbols = tk.BooleanVar(value=True)
         self.exclude_ambiguous = tk.BooleanVar(value=False)
         
-        # Create checkboxes in a grid
         ttk.Checkbutton(options_frame, text="Lowercase (a-z)", 
                        variable=self.include_lowercase,
                        command=self.on_option_change).grid(row=0, column=0, sticky=tk.W, pady=2)
@@ -115,7 +108,6 @@ class PasswordGenerator:
                        variable=self.exclude_ambiguous,
                        command=self.on_option_change).grid(row=2, column=0, columnspan=2, sticky=tk.W, pady=2)
         
-        # Password display section
         display_frame = ttk.Frame(main_frame, style='Custom.TFrame')
         display_frame.pack(fill=tk.X, pady=(0, 20))
         
@@ -124,7 +116,6 @@ class PasswordGenerator:
                  background='#2c3e50', 
                  foreground='#ecf0f1').pack(anchor=tk.W)
         
-        # Password entry with custom styling
         self.password_var = tk.StringVar()
         password_frame = tk.Frame(display_frame, bg='#2c3e50')
         password_frame.pack(fill=tk.X, pady=(5, 0))
@@ -139,8 +130,7 @@ class PasswordGenerator:
                                       state='readonly',
                                       readonlybackground='#ecf0f1')
         self.password_entry.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
-        
-        # Copy button
+ 
         copy_btn = tk.Button(password_frame, text="Copy", 
                            command=self.copy_password,
                            bg='#3498db', fg='white',
@@ -149,13 +139,18 @@ class PasswordGenerator:
                            padx=15, pady=5,
                            cursor='hand2')
         copy_btn.pack(side=tk.RIGHT)
+  
+        self.strength_var = tk.StringVar(value="Strength: Not Generated")
+        self.strength_label = tk.Label(display_frame, textvariable=self.strength_var,
+                                      font=('Arial', 12, 'bold'),
+                                      bg='#2c3e50',
+                                      fg='#ffffff')
+        self.strength_label.pack(pady=(5, 0))
         
-        # Buttons section
         buttons_frame = ttk.Frame(main_frame, style='Custom.TFrame')
         buttons_frame.pack(fill=tk.X, pady=(0, 20))
         
-        # Generate button
-        generate_btn = tk.Button(buttons_frame, text="Generate New", 
+        generate_btn = tk.Button(buttons_frame, text="Generate Password", 
                                command=self.generate_password,
                                bg='#27ae60', fg='white',
                                font=('Arial', 12, 'bold'),
@@ -163,8 +158,7 @@ class PasswordGenerator:
                                padx=20, pady=10,
                                cursor='hand2')
         generate_btn.pack(side=tk.LEFT, padx=(0, 10))
-        
-        # Clear button
+
         clear_btn = tk.Button(buttons_frame, text="Clear", 
                             command=self.clear_password,
                             bg='#e74c3c', fg='white',
@@ -173,20 +167,13 @@ class PasswordGenerator:
                             padx=20, pady=10,
                             cursor='hand2')
         clear_btn.pack(side=tk.LEFT)
-        
-        # Password strength indicator
-        self.strength_var = tk.StringVar()
-        self.strength_label = ttk.Label(main_frame, textvariable=self.strength_var,
-                                       font=('Arial', 12, 'bold'),
-                                       background='#2c3e50')
-        self.strength_label.pack(pady=(10, 0))
     
     def update_length_display(self, value):
         self.length_display.configure(text=str(value))
         self.on_option_change()
     
     def on_option_change(self):
-        if hasattr(self, 'password_var'):
+        if hasattr(self, 'password_var') and hasattr(self, 'strength_var'):
             self.generate_password()
     
     def get_character_set(self):
@@ -230,13 +217,18 @@ class PasswordGenerator:
             
             password = ''.join(random.choice(characters) for _ in range(length))
             self.password_var.set(password)
-            
-            self.update_password_strength(password)
+
+            if hasattr(self, 'strength_var') and hasattr(self, 'strength_label'):
+                self.update_password_strength(password)
             
         except Exception as e:
+            print(f"Error generating password: {e}")  # Debug print
             messagebox.showerror("Error", f"Could not generate password: {str(e)}")
     
     def update_password_strength(self, password):
+        if not hasattr(self, 'strength_var') or not hasattr(self, 'strength_label'):
+            return
+            
         score = 0
         
         if len(password) >= 12:
@@ -255,19 +247,19 @@ class PasswordGenerator:
         
         if score >= 6:
             strength = "Very Strong"
-            color = "#27ae60"
+            color = "#00ff00"  
         elif score >= 4:
             strength = "Strong"
-            color = "#f39c12"
+            color = "#ffff00" 
         elif score >= 2:
             strength = "Medium"
-            color = "#e67e22"
+            color = "#ff8800"
         else:
             strength = "Weak"
-            color = "#e74c3c"
+            color = "#ff0000"
         
         self.strength_var.set(f"Strength: {strength}")
-        self.strength_label.configure(foreground=color)
+        self.strength_label.configure(fg=color)
     
     def copy_password(self):
         password = self.password_var.get()
@@ -276,7 +268,7 @@ class PasswordGenerator:
                 self.root.clipboard_clear()
                 self.root.clipboard_append(password)
                 self.root.update()
-                messagebox.showinfo("Success", "Password copied!")
+                messagebox.showinfo("Success", "Password copied!") 
             except Exception as e:
                 messagebox.showerror("Error", f"Copy failed: {str(e)}")
         else:
@@ -284,12 +276,17 @@ class PasswordGenerator:
     
     def clear_password(self):
         self.password_var.set("")
-        self.strength_var.set("")
+        self.strength_var.set("Strength: Not Generated")
+        self.strength_label.configure(fg='#ffffff')
 
 def main():
+    print("Starting Password Generator...")
     root = tk.Tk()
+    print("Window created")
     app = PasswordGenerator(root)
+    print("App initialized, starting main loop...")
     root.mainloop()
+    print("App closed")
 
 if __name__ == "__main__":
     main()
