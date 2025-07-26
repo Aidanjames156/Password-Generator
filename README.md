@@ -11,10 +11,6 @@ A simple and secure desktop password generator built with Python and Tkinter. Ge
 - **One-click Copy**: Copy generated passwords to clipboard instantly
 - **Modern Dark Theme**: Clean, professional interface
 
-## Screenshots
-
-![Password Generator Interface](screenshot.png)
-
 ## Installation
 
 ### Prerequisites
